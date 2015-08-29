@@ -1,0 +1,49 @@
+#!/bin/bash
+
+DBDIR=/etc/packagedb/
+INSTALLDIR=/
+
+function usage {
+    echo "installpkg <packagename.tar.gz>"
+    exit 1
+}
+
+# Check are we root
+if [ "$(id -u)" != "0" ]; then
+   echo "pkgtool can only be used as root."
+   exit 1
+fi
+
+# Check if arguments are correct and if not display usage
+if [ ! $1 ]; then
+    usage
+fi
+
+# Check if already installed
+if [ -f $DBDIR/${1%%.*} ]; then
+    printf "Package %s already installed.\n" ${1%%.*}
+    exit 1
+fi
+
+# check the integrity of the package tarball
+printf "Checking package integrity... \n"
+if ! tar -ztf $1 &> /dev/null; then
+    printf "%s is an invalid tarball.\n" $1
+    exit 1
+fi
+echo "Done"
+
+# Create database entry for the package
+printf "Creating database entry for %s...\n" $1
+tar -ztf $1 | sed '/^pkgtool/ d'  > $DBDIR/${1%%.*}
+
+# Extract tarball to install dir
+printf "Extracting package %s\n" $1
+tar -xvf $1 -C $INSTALLDIR &> /dev/null
+
+# Execute and delete install script
+printf "Installing package %s.\n" $1
+$INSTALLDIR/pkgtool/install.sh &> /dev/null
+rm -rf $INSTALLDIR/pkgtool
+
+printf "Package %s installed successfully.\n" $1

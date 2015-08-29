@@ -1,0 +1,37 @@
+#!/bin/bash
+
+DBDIR=/etc/packagedb/
+INSTALLDIR=/
+
+function usage {
+    echo "removepkg <packagename>"
+    exit 1
+}
+
+# Check are we root
+if [ "$(id -u)" != "0" ]; then
+   echo "pkgtool can only be used as root."
+   exit 1
+fi
+
+# Check if arguments are correct and if not display usage
+if [ ! $1 ]; then
+    usage
+fi
+
+if [ ! -f $DBDIR$1 ]; then
+    printf "Package %s not installed on this system.\n" $1
+    exit 1
+fi
+
+# First remove the package itself then the db entrys
+printf "Removing package %s... " $1
+cd $INSTALLDIR
+rm -if -- $(cat $DBDIR$1) &> /dev/null
+printf "Done\n"
+
+printf "Removing db entry for package %s... "
+rm $DBDIR$1
+printf "Done\n"
+
+printf "Package %s removed successfully.\n" $1
