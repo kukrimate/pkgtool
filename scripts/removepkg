@@ -27,10 +27,16 @@ fi
 # First remove the package itself then the db entrys
 printf "Removing package %s... " $1
 cd $INSTALLDIR
+
+# Try to remove empty directories
+rm -r -- $(cat $DBDIR$1) &> /dev/null
+
+# Remove files installed by the package
 rm -if -- $(cat $DBDIR$1) &> /dev/null
+
 printf "Done\n"
 
-printf "Removing db entry for package %s... "
+printf "Removing db entry for package %s... " $1
 rm $DBDIR$1
 printf "Done\n"
 
