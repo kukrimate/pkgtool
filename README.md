@@ -1,5 +1,5 @@
 #PKGTool
-A very lightweight package manager written as bunch of shell scripts. It does not support online repositories nor dependency resolution, it's only goal is to make removing and installing packages very easy.
+A very lightweight package manager written in sh. It does not support online repositories nor dependency resolution, it's only goal is to make removing and installing packages very easy.
 
 #Dependencies
 Pkgtool depends on bash, tar, sed and coreutils.
